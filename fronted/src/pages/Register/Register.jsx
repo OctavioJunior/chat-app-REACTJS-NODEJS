@@ -1,13 +1,15 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../../assets/logo.png";
-import { registerApi } from "../../utils/apiConnection.js";
+import { registerApi } from "../../utils/apiConnection";
 import { FormContainer } from "./styles.js";
 
 function Register() {
+  const navigate = useNavigate();
+
   const toastOptions = {
     position: "bottom-right",
     autoClose: "5000",
@@ -26,10 +28,19 @@ function Register() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (handleValidation()) {
-      const { username, email, password, confirmPassword } = values;
-      const data = await axios.post(registerApi, {
-        username, email, password
+      const { username, email, password } = values;
+      const { data } = await axios.post(registerApi, {
+        username,
+        email,
+        password,
       });
+      if (data.status === false) {
+        toast.error(data.msg, toastOptions);
+      }
+      if (data.status === true) {
+        localStorage.setItem("user-chat", JSON.stringify(data.user));
+      }
+      navigate("/");
     }
   };
 
@@ -60,7 +71,7 @@ function Register() {
       return false;
     }
 
-    return console.log("LOGADO");
+    return true;
   };
 
   return (
