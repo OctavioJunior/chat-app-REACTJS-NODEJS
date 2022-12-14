@@ -9,7 +9,7 @@ const server = express();
 server.use(cors());
 server.use(express.json());
 
-server.use("/", usersRoutes);
+server.use("/register", usersRoutes);
 
 server.listen(process.env.PORT, () => {
   console.log(`Server running at http://localhost:${process.env.PORT}`);

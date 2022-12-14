@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logo from "../../assets/logo.png";
+import { registerApi } from "../../utils/apiConnection.js";
 import { FormContainer } from "./styles.js";
 
 function Register() {
@@ -26,7 +27,9 @@ function Register() {
     event.preventDefault();
     if (handleValidation()) {
       const { username, email, password, confirmPassword } = values;
-      const { data } = await axios.post();
+      const data = await axios.post(registerApi, {
+        username, email, password
+      });
     }
   };
 
