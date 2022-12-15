@@ -3,20 +3,54 @@ const bcrypt = require("bcrypt");
 
 class UsersController {
   constructor() {
-    this.createUser = async (req, res) => {
+    this.registerUser = async (req, res) => {
       try {
         console.log(req.body);
         const { username, email, password } = req.body;
-        if (await UsersModel.findOne({ email })) {
-          console.log("User already exist!");
+        const emailExist = await UsersModel.findOne({ email });
+        if (emailExist) {
+          return res.json({ msg: "Email already exist!", status: false });
+        }
+        const usernameExist = await UsersModel.findOne({ username });
+        if (usernameExist) {
+          return res.json({ msg: "Username already exist!", status: false });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await UsersModel.create({ username, email, password });
+        const newUser = await UsersModel.create({
+          username,
+          email,
+          password: hashedPassword,
+        });
         delete newUser.password;
-        res.json(newUser);
+        return res.json({ newUser, status: true });
       } catch (error) {
-        res.json(error);
+        return res.json(error);
+      }
+    };
+
+    this.loginUser = async (req, res) => {
+      try {
+        console.log(req.body);
+        const { username, password } = req.body;
+        const user = await UsersModel.findOne({ username });
+        if (!user) {
+          return res.json({
+            msg: "Username or password incorrect, verify upper or lowercase!",
+            status: false,
+          });
+        }
+        const passwordValid = await bcrypt.compare(password, user.password);
+        if (!passwordValid) {
+          return res.json({
+            msg: "Username or password incorrect, verify upper or lowercase!",
+            status: false,
+          });
+        }
+        delete user.password;
+        return res.json({ user, status: true });
+      } catch (error) {
+        return res.json(error);
       }
     };
   }

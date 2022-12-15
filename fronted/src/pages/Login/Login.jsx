@@ -12,7 +12,7 @@ function Login() {
 
   const toastOptions = {
     position: "bottom-right",
-    autoClose: "5000",
+    autoClose: 5000,
     pauseOnHover: true,
     draggable: true,
     theme: "dark",
@@ -25,25 +25,6 @@ function Login() {
     confirmPassword: "",
   });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (handleValidation()) {
-      const { username, email, password } = values;
-      const { data } = await axios.post(loginApi, {
-        username,
-        email,
-        password,
-      });
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === true) {
-        localStorage.setItem("user-chat", JSON.stringify(data.user));
-      }
-      navigate("/");
-    }
-  };
-
   const handleChange = (event) => {
     setValues({
       ...values,
@@ -52,26 +33,36 @@ function Login() {
   };
 
   const handleValidation = () => {
-    const { username, email, password, confirmPassword } = values;
+    const { username, password } = values;
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords must match!"), toastOptions;
+    if (password === "") {
+      toast.error("Email and password is required!", toastOptions);
       return false;
     }
-    if (username.length < 3) {
-      toast.error("Username must be greater than 2 characters!"), toastOptions;
-      return false;
-    }
-    if (password.length < 6) {
-      toast.error("Password must be greater than 5 characters!"), toastOptions;
-      return false;
-    }
-    if (!email) {
-      toast.error("Email is required!"), toastOptions;
+    if (username === 3) {
+      toast.error("Email and password is required!", toastOptions);
       return false;
     }
 
     return true;
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (handleValidation()) {
+      const { username, password } = values;
+      const { data } = await axios.post(loginApi, {
+        username,
+        password,
+      });
+      if (data.status === false) {
+        toast.error(data.msg, toastOptions);
+      }
+      if (data.status === true) {
+        localStorage.setItem("user-chat", JSON.stringify(data.user));
+        navigate("/");
+      }
+    }
   };
 
   return (
@@ -89,26 +80,14 @@ function Login() {
             onChange={(e) => handleChange(e)}
           />
           <input
-            type="email"
-            placeholder="Email"
-            name="email"
-            onChange={(e) => handleChange(e)}
-          />
-          <input
             type="password"
             placeholder="Password"
             name="password"
             onChange={(e) => handleChange(e)}
           />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            name="confirmPassword"
-            onChange={(e) => handleChange(e)}
-          />
-          <button type="submit">Create User</button>
+          <button type="submit">Login</button>
           <span>
-            Have an account ? <Link to="/login">Login.</Link>
+            Don't have an account ? <Link to="/register">Sign Up</Link>
           </span>
         </form>
       </FormContainer>
